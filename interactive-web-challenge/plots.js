@@ -1,11 +1,12 @@
 
-function buildCharts() {
+function buildCharts(sample_value_1) {
     d3.json("https://2u-data-curriculum-team.s3.amazonaws.com/dataviz-classroom/v1.1/14-Interactive-Web-Visualizations/02-Homework/samples.json").then((data) => {
       let samples = data.samples;
-      console.log(samples)
-      let resultArray = samples.filter(sampleObj => sampleObj.id == "940");
+      console.log(sample_value_1)
+      let resultArray = samples.filter(sampleObj => sampleObj.id === sample_value_1);
+
       let result = resultArray[0];
-  
+console.log(resultArray, "These are the results")
       let otu_ids = result.otu_ids;
       let otu_labels = result.otu_labels;
       let sample_values = result.sample_values;
@@ -29,13 +30,13 @@ function buildCharts() {
     Plotly.newPlot("bar", barData, barLayout);
   });
 }
-buildCharts();
+buildCharts("940");
 
-function buildCharts2() {
+function buildCharts2(sample_value_2) {
   d3.json("https://2u-data-curriculum-team.s3.amazonaws.com/dataviz-classroom/v1.1/14-Interactive-Web-Visualizations/02-Homework/samples.json").then((data) => {
     let samples = data.samples;
-    console.log(samples)
-    let resultArray = samples.filter(sampleObj => sampleObj.id == "940");
+    console.log("First Sample",typeof samples[0].id)
+    let resultArray = samples.filter(sampleObj => sampleObj.id == sample_value_2);
     let result = resultArray[0];
 
     let otu_ids = result.otu_ids;
@@ -63,10 +64,49 @@ function buildCharts2() {
   Plotly.newPlot("bubble", bubbleData, bubbleLayout);
 });
 }
-buildCharts2();
+buildCharts2("940");
 
-const selOptions = [{value: sample_values, text: sample_values}]
-const selElement = d3.select("#selDataset")
-selOptions.forEach(d => {
-  selElement.append("option").attr("value", d.value).text(d.text)
-})
+function optionChanged(value){
+  buildCharts(value),
+  buildCharts2(value)
+}
+
+
+function buildDropdown() {
+  
+  d3.json("https://2u-data-curriculum-team.s3.amazonaws.com/dataviz-classroom/v1.1/14-Interactive-Web-Visualizations/02-Homework/samples.json").then((data) => {
+    let samples = data.names;
+      console.log(samples)
+      let resultArray = samples.filter(sampleObj => sampleObj.id == "940");
+      let result = resultArray[0];
+  
+      // let otu_ids = result.otu_ids;
+      // let otu_labels = result.otu_labels;
+      // let sample_values = result.sample_values;
+    // const selOptions = [{value: sample_values, text: sample_values}]
+    console.log("Sel Options",samples)
+    const selElement = d3.select("#selDataset")
+    samples.forEach(d => {
+      selElement.append("option").attr("value", d).text(d)
+    })
+  });
+}
+buildDropdown();
+
+function buildMetadata(sample) {
+  d3.json("https://2u-data-curriculum-team.s3.amazonaws.com/dataviz-classroom/v1.1/14-Interactive-Web-Visualizations/02-Homework/samples.json").then((data) => {
+    var metadata = data.metadata;
+    var resultArray = metadata.filter(sampleObj => sampleObj.id == sample);
+    var result = resultArray[0];
+    var container = d3.select("#sample-metadata");
+    container.html("");
+    Object.entries(result).forEach(([key, value]) => {
+      container.append("h6").text(`${key.toUpperCase()}: ${value}`);
+    });
+  });
+}
+buildMetadata("940");
+
+function optionChanged(value){
+  buildMetadata(value)
+}
